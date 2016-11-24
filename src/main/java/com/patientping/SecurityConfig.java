@@ -26,19 +26,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                com.patientping.domain.User user = userRepository.findByUserName(username);
-                if(user != null) {
-                    return new User(user.getUserName(), user.getPassWord(), true, true, true, true,
-                            AuthorityUtils.createAuthorityList("USER"));
-                } else {
-                    throw new UsernameNotFoundException("could not find the user '"
-                            + username + "'");
-                }
+        return username -> {
+            com.patientping.domain.User user = userRepository.findByUserName(username);
+            if(user != null) {
+                return new User(user.getUserName(), user.getPassWord(), true, true, true, true,
+                        AuthorityUtils.createAuthorityList("USER"));
+            } else {
+                throw new UsernameNotFoundException("could not find the user '"
+                        + username + "'");
             }
-
         };
     }
 
